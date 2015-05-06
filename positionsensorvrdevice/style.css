@@ -1,0 +1,31 @@
+h1 {
+  position: absolute;
+}
+
+html,body,canvas {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+  overflow:hidden;
+}
+
+p {
+  font-family: helvetica,arial,sans-serif;
+  color: white;
+  text-shadow: 1px 1px 1px black;
+  position: absolute;
+  padding: 3px 10px;
+  background-color: rgba(0,0,0,0.3);
+}
+
+p:nth-child(2) {
+  right: 3px;
+  bottom: -13px;
+}
+
+p:nth-child(1) {
+  right: 3px;
+  bottom: 12px;
+}
