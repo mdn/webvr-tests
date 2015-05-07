@@ -17,12 +17,14 @@
 
   <p>Position: </p>
   <p>Orientation: </p>
+  <p>Timestamp: </p>
   <button>Reset Sensor</button>
 
   </body>
   <script>
     var posPara = document.querySelectorAll('p')[0];
     var orientPara = document.querySelectorAll('p')[1];
+    var timePara = document.querySelectorAll('p')[2];
     var gHMD, gPositionSensor;
     var xPos = 0;
     var yPos = 0;
@@ -138,9 +140,11 @@
                                     + roundToTwo(posState.orientation.z);
         xOrient = posState.orientation.x * WIDTH;
         yOrient = -posState.orientation.y * HEIGHT * 2;
-        zOrient = posState.orientation.z * 180;
+        zOrient = -posState.orientation.z * 180;
 
       }
+
+      timePara.textContent = 'Timestamp: ' + Math.floor(posState.timeStamp);
     }
 
     document.querySelector('button').onclick = function() {

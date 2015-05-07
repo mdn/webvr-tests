@@ -18,7 +18,7 @@ html {
 button {
   position: absolute;
   left: 3px;
-  bottom: 2px;
+  bottom: 4px;
 }
 
 p {
@@ -27,6 +27,11 @@ p {
   text-shadow: 1px 1px 1px black;
   padding: 3px 10px;
   background-color: rgba(0,0,0,0.3);
+}
+
+p:nth-child(3) {
+  left: 3px;
+  bottom: 12px;
 }
 
 p:nth-child(2) {
