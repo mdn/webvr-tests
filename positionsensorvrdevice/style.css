@@ -11,11 +11,20 @@ body {
   overflow:hidden;
 }
 
-p {
+html {
   font-family: helvetica,arial,sans-serif;
+}
+
+button {
+  position: absolute;
+  left: 3px;
+  bottom: 2px;
+}
+
+p {
+  position: absolute;
   color: white;
   text-shadow: 1px 1px 1px black;
-  position: absolute;
   padding: 3px 10px;
   background-color: rgba(0,0,0,0.3);
 }

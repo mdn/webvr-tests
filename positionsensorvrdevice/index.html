@@ -17,6 +17,7 @@
 
   <p>Position: </p>
   <p>Orientation: </p>
+  <button>Reset Sensor</button>
 
   </body>
   <script>
@@ -137,9 +138,13 @@
                                     + roundToTwo(posState.orientation.z);
         xOrient = posState.orientation.x * WIDTH;
         yOrient = -posState.orientation.y * HEIGHT * 2;
-        zOrient = -posState.orientation.z * 180;
+        zOrient = posState.orientation.z * 180;
 
       }
+    }
+
+    document.querySelector('button').onclick = function() {
+      gPositionSensor.resetSensor();
     }
 
     function roundToTwo(num) {    
