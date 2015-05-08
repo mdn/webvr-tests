@@ -137,7 +137,7 @@
       if(posState.hasOrientation) {
         xOrient = posState.orientation.x * WIDTH;
         yOrient = -posState.orientation.y * HEIGHT * 2;
-        zOrient = -posState.orientation.z * 180;
+        zOrient = posState.orientation.z * 180;
       }
 
       linVelPara.textContent = 'Linear velocity: x' + formatNumber(posState.linearVelocity.x) + " y"
