@@ -15,16 +15,19 @@
 
   <body>
 
-  <p>Position: </p>
-  <p>Orientation: </p>
-  <p>Timestamp: </p>
-  <button>Reset Sensor</button>
+  <p>Linear velocity: </p>
+  <p>Linear acceleration: </p>
+  <p>Angular velocity: </p>
+  <p>Angular acceleration: </p>
+  
 
   </body>
   <script>
-    var posPara = document.querySelectorAll('p')[0];
-    var orientPara = document.querySelectorAll('p')[1];
-    var timePara = document.querySelectorAll('p')[2];
+    var linVelPara = document.querySelectorAll('p')[0];
+    var linAccPara = document.querySelectorAll('p')[1];
+    var angVelPara = document.querySelectorAll('p')[2];
+    var angAccPara = document.querySelectorAll('p')[3];
+
     var gHMD, gPositionSensor;
     var xPos = 0;
     var yPos = 0;
@@ -122,9 +125,6 @@
     function setView() {
       var posState = gPositionSensor.getState();
       if(posState.hasPosition) {
-        posPara.textContent = 'Position: x' + roundToTwo(posState.position.x) + " y"
-                                    + roundToTwo(posState.position.y) + " z"
-                                    + roundToTwo(posState.position.z);
         xPos = -posState.position.x * WIDTH * 2;
         yPos = posState.position.y * HEIGHT * 2;
         if(-posState.position.z > 0.01) {
@@ -135,25 +135,38 @@
       }
 
       if(posState.hasOrientation) {
-        orientPara.textContent = 'Orientation: x' + roundToTwo(posState.orientation.x) + " y"
-                                    + roundToTwo(posState.orientation.y) + " z"
-                                    + roundToTwo(posState.orientation.z);
         xOrient = posState.orientation.x * WIDTH;
         yOrient = -posState.orientation.y * HEIGHT * 2;
-        zOrient = posState.orientation.z * 180;
-
+        zOrient = -posState.orientation.z * 180;
       }
 
-      timePara.textContent = 'Timestamp: ' + Math.floor(posState.timeStamp);
+      linVelPara.textContent = 'Linear velocity: x' + formatNumber(posState.linearVelocity.x) + " y"
+                                    + formatNumber(posState.linearVelocity.y) + " z"
+                                    + formatNumber(posState.linearVelocity.z);
+
+      linAccPara.textContent = 'Linear acceleration: x' + formatNumber(posState.linearAcceleration.x) + " y"
+                                    + formatNumber(posState.linearAcceleration.y) + " z"
+                                    + formatNumber(posState.linearAcceleration.z);
+      
+      angVelPara.textContent = 'Angular velocity: x' + formatNumber(posState.angularVelocity.x) + " y"
+                                    + formatNumber(posState.angularVelocity.y) + " z"
+                                    + formatNumber(posState.angularVelocity.z);
+
+      angAccPara.textContent = 'Angular acceleration: x' + formatNumber(posState.angularVelocity.x) + " y"
+                                    + formatNumber(posState.angularVelocity.y) + " z"
+                                    + formatNumber(posState.angularVelocity.z);
     }
 
-    document.querySelector('button').onclick = function() {
-      gPositionSensor.resetSensor();
+    function formatNumber(number) {
+      number = number.toFixed(2);
+      if(number => 0) {
+        number = Math.abs(number);
+        number = number.toFixed(2);
+        number = "+" + number;
+      }
+      return number;
     }
 
-    function roundToTwo(num) {    
-      return +(Math.round(num + "e+2")  + "e-2");
-    }
 
     myCanvas.addEventListener('click',fullScreen,false);
 
