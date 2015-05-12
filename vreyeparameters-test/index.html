@@ -13,10 +13,44 @@
 				padding: 0;
 				overflow: hidden;
 			}
+            
+            .listdiv {
+            	position: absolute;
+            	bottom: 0;
+            	left: 0;
+            	font-family: sans-serif;
+            	font-size: 12px;
+            }
+
+            .listdiv li {
+            	padding-bottom: 10px;
+            }
+
+            button {
+              position: absolute;
+            }
+
+            button:nth-of-type(1) {
+              top: 3px;
+              left: 0;
+            }
+
+            button:nth-of-type(2) {
+              top: 3px;
+              left: 60px;
+            }
+
 		</style>
 	</head>
 
 	<body>
+    <div class="listdiv">
+	<ul>
+	</ul>
+	</div>
+
+    <button>Left eye</button>
+	<button>Right eye</button>
 
 	</body>
 
@@ -31,6 +65,13 @@
 	<script src="js/VREffect.js"></script>
 
 	<script>
+        /*
+        Variables for outputting test info for eye parameters
+        */
+
+        var eyeList = document.querySelector('ul');
+        document.querySelector('button:nth-of-type(1)').onclick = function() { listEyeParams('left') };
+        document.querySelector('button:nth-of-type(2)').onclick = function() { listEyeParams('right') };
 
 		/*
 		Setup three.js WebGL renderer
@@ -130,6 +171,50 @@
 	      }
 
 	    }
+
+	    function setCustomFOV(up,right,down,left) {
+          var testFOV = new VRFieldOfView(up,right,down,left);
+
+          gHMD.setFieldOfView(testFOV,testFOV,0.01,10000.0);
+	    }
+
+	    function listEyeParams(eye) {
+	    	eyeList.textContent = '';
+
+	      	var eyeParams = gHMD.getEyeParameters(eye);
+            
+            var minFOV = eyeParams.minimumFieldOfView;
+            var maxFOV = eyeParams.maximumFieldOfView;
+            var recFOV = eyeParams.recommendedFieldOfView;
+            var eyeTrans = eyeParams.eyeTranslation;
+            var curFOV = eyeParams.currentFieldOfView;
+            var renRec = eyeParams.renderRect;
+
+            var minFOVLi = document.createElement('li');
+            minFOVLi.textContent = 'minimumFieldOfView: ' + minFOV.upDegrees + ' ' + minFOV.rightDegrees + ' ' + minFOV.downDegrees + ' ' + minFOV.leftDegrees;
+            eyeList.appendChild(minFOVLi);
+
+            var maxFOVLi = document.createElement('li');
+            maxFOVLi.textContent = 'maximumFieldOfView: ' + maxFOV.upDegrees + ' ' + maxFOV.rightDegrees + ' ' + maxFOV.downDegrees + ' ' + maxFOV.leftDegrees;
+            eyeList.appendChild(maxFOVLi);
+
+            var recFOVLi = document.createElement('li');
+            recFOVLi.textContent = 'recommendedFieldOfView: ' + recFOV.upDegrees + ' ' + recFOV.rightDegrees + ' ' + recFOV.downDegrees + ' ' + recFOV.leftDegrees;
+            eyeList.appendChild(recFOVLi);
+
+            var eyeTransLi = document.createElement('li');
+            eyeTransLi.textContent = 'eyeTranslation: ' + eyeTrans.x + ' ' + eyeTrans.y + ' ' + eyeTrans.z + ' ' + eyeTrans.w;
+            eyeList.appendChild(minFOVLi);
+
+            var curFOVLi = document.createElement('li');
+            curFOVLi.textContent = 'currentFieldOfView: ' + curFOV.upDegrees + ' ' + curFOV.rightDegrees + ' ' + curFOV.downDegrees + ' ' + curFOV.leftDegrees;
+            eyeList.appendChild(curFOVLi);
+
+            var renRecLi = document.createElement('li');
+            renRecLi.textContent = 'renderRect: ' + renRec.x + ' ' + renRec.y + ' ' + renRec.width + ' ' + renRec.height + ' ' + renRec.top + ' ' + renRec.right + ' ' + renRec.bottom + ' ' + renRec.left;
+            eyeList.appendChild(renRecLi);            
+	    }
+		
 
 		/*
 		Request animation frame loop function
