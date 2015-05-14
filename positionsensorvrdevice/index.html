@@ -85,10 +85,10 @@
       ctx.translate(WIDTH/4,HEIGHT/2);
       ctx.rect(-(WIDTH/4),-(HEIGHT/2),WIDTH/2,HEIGHT);
       ctx.clip();
-      ctx.strokeStyle = "black";
-      ctx.stroke();
       ctx.rotate(zOrient * Math.PI / 180);
       ctx.drawImage(image,-(WIDTH/4)+lCtrOffset-((image.width)/(2*(1/zPos)))+xPos-yOrient,-((image.height)/(2*(1/zPos)))+yPos+xOrient,image.width*zPos,image.height*zPos);
+      ctx.strokeStyle = "black";
+      ctx.stroke();
       ctx.restore();
 
       ctx.save();
@@ -96,10 +96,10 @@
       ctx.translate(WIDTH*0.75,HEIGHT/2);
       ctx.rect(-(WIDTH/4),-(HEIGHT/2),WIDTH/2,HEIGHT);
       ctx.clip();
-      ctx.strokeStyle = "black";
-      ctx.stroke();
       ctx.rotate(zOrient * Math.PI / 180);
       ctx.drawImage(image,(WIDTH*0.25)-rCtrOffset-((image.width)/(2*(1/zPos)))+xPos-yOrient,-((image.height)/(2*(1/zPos)))+yPos+xOrient,image.width*zPos,image.height*zPos);
+      ctx.strokeStyle = "black";
+      ctx.stroke();
       ctx.restore();
     }
 
