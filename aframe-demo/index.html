@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hello, World! - A-Frame</title>
+    <meta name="description" content="Hello, World! - A-Frame">
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <a-assets>
+        <img id="metalTexture" src="metal003.png">
+        <img id="skyTexture" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/sechelt.jpg">
+      </a-assets>
+
+      <a-box position="-1 0.5 -3" rotation="0 0 0" color="#4CC3D9" src="#metalTexture">
+            <a-animation attribute="rotation" to="360 360 0" direction="normal" dur="6000" repeat="indefinite" easing="linear">
+            </a-animation>
+      </a-box>
+      <a-sky src="#skyTexture"></a-sky>
+
+      <a-light type="ambient" color="#445451"></a-light>
+      <a-light type="point" intensity="4" position="-2 1 0"></a-light>
+    </a-scene>
+  </body>
+</html>

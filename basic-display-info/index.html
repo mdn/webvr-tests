@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <title>VRDevice basic test</title>
+
+  </head>
+
+  <body>
+    <h1>VRDisplay basic test</h1>
+
+    <p></p>
+
+    <ul>
+    </ul>
+
+
+  </body>
+  <script>
+    var list = document.querySelector('ul');
+    var info = document.querySelector('p');
+    if(navigator.getVRDisplays) {
+        reportDisplays();     
+    } else {
+      info.textContent = 'WebVR API not supported by this browser.'
+    }
+
+    function reportDisplays() {
+      navigator.getVRDisplays().then(function(displays) {
+        for(var i = 0; i < displays.length; i++) {
+          var listItem = document.createElement('li');
+          listItem.innerHTML = 'Display ' + (i+1)
+                       + ', <strong>VD Display ID</strong>: ' + displays[i].displayId
+                       + ', <strong>VR Display Name</strong>: ' + displays[i].displayName
+                       + '.';
+          list.appendChild(listItem);
+        }
+      });
+    }
+
+    // The following event handlers don't seem to work. Display still shows as connected even when unplugged?
+
+    window.addEventListener('vrdisplayconnected', function() {
+      info.textContent = 'Display connected.'
+      reportDisplays();
+    });
+
+    window.addEventListener('vrdisplaydisconnected', function() {
+      info.textContent = 'Display disconnected.'
+      reportDisplays();
+    });
+
+    window.addEventListener('vrdisplayactivate', function() {
+      info.textContent = 'Display activated.'
+    });
+
+    window.addEventListener('vrdisplaydeactivate', function() {
+      info.textContent = 'Display deactivated.'
+    });
+
+
+  </script>
+</html>

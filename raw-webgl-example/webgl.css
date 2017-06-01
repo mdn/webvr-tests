@@ -1,0 +1,10 @@
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+button {
+	position: absolute;
+	top: 3px;
+	right: 3px;
+}
