@@ -1,5 +1,5 @@
-var canvas;
-var gl;
+var canvas; // The canvas element
+var gl; // The WebGL context
 
 var cubeVerticesBuffer;
 var cubeVerticesTextureCoordBuffer;
@@ -12,7 +12,7 @@ var cubeImage;
 var cubeTexture;
 
 var mvMatrix;
-var shaderProgram;
+var shaderProgram; // The WebGLProgram we will create, which will render the cube
 var vertexPositionAttribute;
 var textureCoordAttribute;
 var perspectiveMatrix;
@@ -22,6 +22,8 @@ var perspectiveMatrix;
 var frameData = new VRFrameData();
 var vrDisplay;
 var btn = document.querySelector('button');
+var normalSceneFrame;
+var vrSceneFrame;
 
 //
 // start
@@ -30,9 +32,6 @@ var btn = document.querySelector('button');
 //
 function start() {
   canvas = document.getElementById("glcanvas");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
 
   initWebGL(canvas);      // Initialize the GL context
 
@@ -58,6 +57,12 @@ function start() {
 
     initTextures();
 
+    // draw the scene normally, without WebVR - for those who don't have it and want to see the scene in their browser
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    drawScene();
+
     // WebVR: Check to see if WebVR is supported
     if(navigator.getVRDisplays) {
       console.log('WebVR 1.1 supported');
@@ -67,15 +72,37 @@ function start() {
         if(displays.length > 0) {
           vrDisplay = displays[0];
           console.log('Display found');
-
           // Starting the presentation when the button is clicked: It can only be called in response to a user gesture
           btn.addEventListener('click', function() {
-            vrDisplay.requestPresent([{ source: canvas }]).then(function() {
-              console.log('Presenting to WebVR display');
-              // start the presentation
+            if(btn.textContent === 'Start VR display') {
+              vrDisplay.requestPresent([{ source: canvas }]).then(function() {
+                console.log('Presenting to WebVR display');
+
+                // Set the canvas size to the size of the vrDisplay viewport
+
+                var leftEye = vrDisplay.getEyeParameters('left');
+                var rightEye = vrDisplay.getEyeParameters('right');
+
+                canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
+                canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight) * 2;
+
+                // stop the normal presentation, and start the vr presentation
+                window.cancelAnimationFrame(normalSceneFrame);
+                drawVRScene();
+
+                btn.textContent = 'Exit VR display';
+              });
+            } else {
+              vrDisplay.exitPresent();
+              console.log('Stopped presenting to WebVR display');
+
+              btn.textContent = 'Start VR display';
+
+              // Stop the VR presentation, and start the normal presentation
+              vrDisplay.cancelAnimationFrame(vrSceneFrame);
               drawScene();
-            });
-          })
+            }
+          });
         }
       });     
     } else {
@@ -262,21 +289,105 @@ function handleTextureLoaded(image, texture) {
 
 //
 // drawScene
-//
-// Draw the scene.
-//
-function drawScene() {
-  console.log('Starting to draw scene');
-  // WebVR: Request the next frame of the animation
-  vrDisplay.requestAnimationFrame(drawScene);
 
-  vrDisplay.getFrameData(frameData);
+
+function drawScene() {
+  // Request the next frame of the animation
+  normalSceneFrame = window.requestAnimationFrame(drawScene);
 
   // Clear the canvas before we start drawing on it.
 
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // STUCK HERE - NOT SURE HOW TO GET THE VALUES OF projectionMatrixLocation AND viewMatrixLocation THAT I NEED
+  gl.viewport(0, 0, canvas.width, canvas.height);
+
+  // Establish the perspective with which we want to view the
+  // scene. Our field of view is 45 degrees, with a width/height
+  // ratio of 640:480, and we only want to see objects between 0.1 units
+  // and 100 units away from the camera.
+
+  perspectiveMatrix = makePerspective(45, 640.0/480.0, 0.1, 100.0);
+
+  // Set the drawing position to the "identity" point, which is
+  // the center of the scene.
+
+  loadIdentity();
+
+  // Now move the drawing position a bit to where we want to start
+  // drawing the cube.
+
+  mvTranslate([-0.0, 0.0, -9.0]);
+
+  // Save the current matrix, then rotate before we draw.
+
+  mvPushMatrix();
+  mvRotate(cubeRotation, [0.25, 0, 0.25]);
+
+  // Draw the cube by binding the array buffer to the cube's vertices
+  // array, setting attributes, and pushing it to GL.
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
+  gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+
+  // Set the texture coordinates attribute for the vertices.
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesTextureCoordBuffer);
+  gl.vertexAttribPointer(textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+
+  // Specify the texture to map onto the faces.
+
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
+  gl.uniform1i(gl.getUniformLocation(shaderProgram, "uSampler"), 0);
+
+  // Draw the cube.
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
+  setMatrixUniforms();
+  gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
+
+  // Restore the original matrix
+
+  mvPopMatrix();
+
+  // Update the rotation for the next draw, if it's time to do so.
+
+  var currentTime = (new Date).getTime();
+  if (lastCubeUpdateTime) {
+    var delta = currentTime - lastCubeUpdateTime;
+
+    cubeRotation += (30 * delta) / 1000.0;
+  }
+
+  lastCubeUpdateTime = currentTime;
+}
+
+
+//
+// WebVR: Draw the scene for the WebVR display.
+//
+function drawVRScene() {
+  // WebVR: Request the next frame of the animation
+  vrSceneFrame = vrDisplay.requestAnimationFrame(drawVRScene);
+
+  // Populate frameData with the data of the next frame to display
+  vrDisplay.getFrameData(frameData);
+
+  // You can get the position, orientation, etc. of the display from the current frame's pose
+
+  var curFramePose = frameData.pose;
+  var curPos = curFramePose.position;
+  var curOrient = curFramePose.orientation;
+
+  // Clear the canvas before we start drawing on it.
+
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // WebVR: Create the required projection and view matrix locations needed
+  // for passing into the uniformMatrix4fv methods below
+
+  var projectionMatrixLocation = gl.getUniformLocation(shaderProgram, "projMatrix");
+  var viewMatrixLocation = gl.getUniformLocation(shaderProgram, "viewMatrix");
 
   // WebVR: Render the left eye’s view to the left half of the canvas
   gl.viewport(0, 0, canvas.width * 0.5, canvas.height);
@@ -306,12 +417,16 @@ function drawScene() {
     // Now move the drawing position a bit to where we want to start
     // drawing the cube.
 
-    mvTranslate([-0.0, 0.0, -9.0]);
+    mvTranslate([
+                  0.0 - (curPos[0] * 25) + (curOrient[1] * 25),
+                  5.0 - (curPos[1] * 25) - (curOrient[0] * 25),
+                  -15.0 - (curPos[2] * 25)
+               ]);
 
     // Save the current matrix, then rotate before we draw.
 
     mvPushMatrix();
-    mvRotate(cubeRotation, [1, 0, 1]);
+    mvRotate(cubeRotation, [0.25, 0, 0.25 - curOrient[2] * 0.5]);
 
     // Draw the cube by binding the array buffer to the cube's vertices
     // array, setting attributes, and pushing it to GL.
@@ -367,7 +482,7 @@ function initShaders() {
 
   // Create the shader program
 
-  shaderProgram = gl.createProgram();
+  shaderProgram = gl.createProgram(); // Create our program, set it to be the value of shaderProgram
   gl.attachShader(shaderProgram, vertexShader);
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
@@ -378,7 +493,7 @@ function initShaders() {
     alert("Unable to initialize the shader program: " + gl.getProgramInfoLog(shader));
   }
 
-  gl.useProgram(shaderProgram);
+  gl.useProgram(shaderProgram); // Specify the WebGL program we want to use for the rendering
 
   vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
   gl.enableVertexAttribArray(vertexPositionAttribute);
@@ -496,3 +611,5 @@ function mvRotate(angle, v) {
   var m = Matrix.Rotation(inRadians, $V([v[0], v[1], v[2]])).ensure4x4();
   multMatrix(m);
 }
+
+
