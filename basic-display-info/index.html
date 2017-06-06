@@ -23,7 +23,7 @@
     var list = document.querySelector('ul');
     var info = document.querySelector('p');
     if(navigator.getVRDisplays) {
-        reportDisplays();     
+        reportDisplays();
     } else {
       info.textContent = 'WebVR API not supported by this browser.'
     }
@@ -31,10 +31,15 @@
     function reportDisplays() {
       navigator.getVRDisplays().then(function(displays) {
         for(var i = 0; i < displays.length; i++) {
+          var cap = displays[i].capabilities;
           var listItem = document.createElement('li');
           listItem.innerHTML = 'Display ' + (i+1)
                        + ', <strong>VD Display ID</strong>: ' + displays[i].displayId
-                       + ', <strong>VR Display Name</strong>: ' + displays[i].displayName
+                       + '<br>, <strong>VR Display Name</strong>: ' + displays[i].displayName
+                       + '<br>, <strong>Display can present content</strong>: ' + cap.canPresent
+                       + '<br>, <strong>Display is separate from the computer\'s main display</strong>: ' + cap.hasExternalDisplay
+                       + '<br>, <strong>Display can return orientation info</strong>: ' + cap.hasOrientation
+                       + '<br>, <strong>Display max layers</strong>: ' + cap.hasPosition
                        + '.';
           list.appendChild(listItem);
         }
@@ -55,10 +60,27 @@
 
     window.addEventListener('vrdisplayactivate', function() {
       info.textContent = 'Display activated.'
+      reportDisplays();
     });
 
     window.addEventListener('vrdisplaydeactivate', function() {
       info.textContent = 'Display deactivated.'
+      reportDisplays();
+    });
+
+    window.addEventListener('vrdisplayblur', function() {
+      info.textContent = 'Display unfocused.'
+      reportDisplays();
+    });
+
+    window.addEventListener('vrdisplayfocus', function() {
+      info.textContent = 'Display focused.'
+      reportDisplays();
+    });
+
+    window.addEventListener('vrdisplaypresentchange', function() {
+      info.textContent = 'Display presentation status changed.'
+      reportDisplays();
     });
 
 
