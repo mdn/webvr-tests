@@ -20,7 +20,6 @@
 
   </body>
   <script>
-    var list = document.querySelector('ul');
     var info = document.querySelector('p');
     var vrDisplay;
 
@@ -32,22 +31,17 @@
 
     function reportStageParams() {
       navigator.getVRDisplays().then(function(displays) {
-        for(var i = 0; i < displays.length; i++) {
-          vrDisplay = displays[0];
-          var stageParams = displays[i].stageParameters;
-          // stageParams is a VRStageParameters object
+        vrDisplay = displays[0];
+        var stageParams = displays[i].stageParameters;
+        // stageParams is a VRStageParameters object
 
-          if(stageParams === null) {
-            info.textContent = 'Your VR Hardware does not support room-scale experiences.'
-          } else {
-            var listItem = document.createElement('li');
-            listItem.innerHTML = '<strong>Display stage parameters</strong>'
-                         + '<br>Sitting to standing transform: ' + stageParams.sittingToStandingTransform
-                         + '<br>Play area width (m): ' + stageParams.sizeX
-                         + '<br>Play area depth (m): ' + stageParams.sizeY
-          }
-
-          list.appendChild(listItem);
+        if(stageParams === null) {
+          info.textContent = 'Your VR Hardware does not support room-scale experiences.'
+        } else {
+          info.textContent = '<strong>Display stage parameters</strong>'
+                       + '<br>Sitting to standing transform: ' + stageParams.sittingToStandingTransform
+                       + '<br>Play area width (m): ' + stageParams.sizeX
+                       + '<br>Play area depth (m): ' + stageParams.sizeY
         }
       });
     }
