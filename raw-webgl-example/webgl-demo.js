@@ -613,5 +613,5 @@ function mvRotate(angle, v) {
 }
 
 window.addEventListener('vrdisplaypresentchange', function(e) {
-  console.log(e);
+  console.log('Display ' + e.display.displayId + ' presentation has changed. Reason given: ' + e.reason + '.');
 })
