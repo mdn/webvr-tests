@@ -32,13 +32,13 @@
     function reportStageParams() {
       navigator.getVRDisplays().then(function(displays) {
         vrDisplay = displays[0];
-        var stageParams = displays[i].stageParameters;
+        var stageParams = vrDisplay.stageParameters;
         // stageParams is a VRStageParameters object
 
         if(stageParams === null) {
           info.textContent = 'Your VR Hardware does not support room-scale experiences.'
         } else {
-          info.textContent = '<strong>Display stage parameters</strong>'
+          info.innerHTML = '<strong>Display stage parameters</strong>'
                        + '<br>Sitting to standing transform: ' + stageParams.sittingToStandingTransform
                        + '<br>Play area width (m): ' + stageParams.sizeX
                        + '<br>Play area depth (m): ' + stageParams.sizeY
