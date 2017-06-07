@@ -611,3 +611,7 @@ function mvRotate(angle, v) {
   var m = Matrix.Rotation(inRadians, $V([v[0], v[1], v[2]])).ensure4x4();
   multMatrix(m);
 }
+
+window.addEventListener('vrdisplaypresentchange', function(e) {
+  console.log(e);
+})
