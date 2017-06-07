@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <title>VRFieldOfView basic test</title>
+
+  </head>
+
+  <body>
+    <h1>VRFieldOfView basic test</h1>
+
+    <p></p>
+
+    <ul>
+    </ul>
+
+
+  </body>
+  <script>
+    var info = document.querySelector('p');
+    var list = document.querySelector('ul');
+    var vrDisplay;
+
+    if(navigator.getVRDisplays) {
+        reportFieldOfView();
+    } else {
+      info.textContent = 'WebVR API not supported by this browser.'
+    }
+
+    function reportFieldOfView() {
+      navigator.getVRDisplays().then(function(displays) {
+        vrDisplay = displays[0];
+        var lEye = vrDisplay.getEyeParameters('left');
+        var rEye = vrDisplay.getEyeParameters('right');
+        // lEye and rEye are VREyeParameters objects
+
+        var lFOV = lEye.fieldOfView;
+        var rFOV = rEye.fieldOfView;
+        // lFOV and rFOV are VRFieldOfView objects
+
+        var listitem1 = document.createElement('li');
+        var listitem2 = document.createElement('li');
+
+        listitem1.innerHTML = '<strong>Left eye parameters</strong>'
+                     + '<br>Offset: ' + lEye.offset
+                     + '<br>Render width: ' + lEye.renderWidth
+                     + '<br>Render height: ' + lEye.renderHeight
+                     + '<br>Up degrees: ' + lFOV.upDegrees
+                     + '<br>Right degrees: ' + lFOV.rightDegrees
+                     + '<br>Down degrees: ' + lFOV.downDegrees
+                     + '<br>Left degrees: ' + lFOV.leftDegrees
+
+       listitem2.innerHTML = '<strong>Right eye parameters</strong>'
+                    + '<br>Offset: ' + rEye.offset
+                    + '<br>Render width: ' + rEye.renderWidth
+                    + '<br>Render height: ' + rEye.renderHeight
+                    + '<br>Up degrees: ' + rFOV.upDegrees
+                    + '<br>Right degrees: ' + rFOV.rightDegrees
+                    + '<br>Down degrees: ' + rFOV.downDegrees
+                    + '<br>Left degrees: ' + rFOV.leftDegrees
+
+        list.appendChild(listitem1);
+        list.appendChild(listitem2);
+      });
+    }
+  </script>
+</html>
