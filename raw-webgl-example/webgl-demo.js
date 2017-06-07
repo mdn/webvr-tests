@@ -84,7 +84,7 @@ function start() {
                 var rightEye = vrDisplay.getEyeParameters('right');
 
                 canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
-                canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight) * 2;
+                canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
 
                 // stop the normal presentation, and start the vr presentation
                 window.cancelAnimationFrame(normalSceneFrame);
@@ -104,7 +104,7 @@ function start() {
             }
           });
         }
-      });     
+      });
     } else {
       info.textContent = 'WebVR API not supported by this browser.'
     }
@@ -611,5 +611,3 @@ function mvRotate(angle, v) {
   var m = Matrix.Rotation(inRadians, $V([v[0], v[1], v[2]])).ensure4x4();
   multMatrix(m);
 }
-
-
