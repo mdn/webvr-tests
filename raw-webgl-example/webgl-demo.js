@@ -21,9 +21,21 @@ var perspectiveMatrix;
 
 var frameData = new VRFrameData();
 var vrDisplay;
-var btn = document.querySelector('button');
+var btn = document.querySelector('.stop-start');
 var normalSceneFrame;
 var vrSceneFrame;
+
+var poseStatsBtn = document.querySelector('.pose-stats');
+var poseStatsSection = document.querySelector('section');
+poseStatsSection.style.visibility = 'hidden'; // hide it initially
+
+var posStats = document.querySelector('.pos');
+var orientStats = document.querySelector('.orient');
+var linVelStats = document.querySelector('.lin-vel');
+var linAccStats = document.querySelector('.lin-acc');
+var angVelStats = document.querySelector('.ang-vel');
+var angAccStats = document.querySelector('.ang-acc');
+var poseStatsDisplayed = false;
 
 //
 // start
@@ -378,6 +390,9 @@ function drawVRScene() {
   var curFramePose = frameData.pose;
   var curPos = curFramePose.position;
   var curOrient = curFramePose.orientation;
+  if(poseStatsDisplayed) {
+    displayPoseStats(curFramePose);
+  }
 
   // Clear the canvas before we start drawing on it.
 
@@ -612,6 +627,59 @@ function mvRotate(angle, v) {
   multMatrix(m);
 }
 
+// WebVR: Sample event handler
+
 window.addEventListener('vrdisplaypresentchange', function(e) {
   console.log('Display ' + e.display.displayId + ' presentation has changed. Reason given: ' + e.reason + '.');
 })
+
+// WebVR: Controls readout of pose stats panel
+
+// var poseStatsBtn = document.querySelector('.pose-stats');
+// var poseStatsSection = document.querySelector('section');
+// var posStats = document.querySelector('.pos');
+// var orientStats = document.querySelector('.orient');
+// var linVelStats = document.querySelector('.lin-vel');
+// var linAccStats = document.querySelector('.lin-acc');
+// var angVelStats = document.querySelector('.ang-vel');
+// var angAccStats = document.querySelector('.ang-acc');
+// var poseStatsDisplay = false;
+
+poseStatsBtn.addEventListener('click', function() {
+  if(!poseStatsDisplayed) {
+    poseStatsDisplayed = true;
+    poseStatsSection.style.visibility = 'visible';
+    poseStatsBtn.textContent = 'Hide pose stats';
+  } else {
+    poseStatsDisplayed = false;
+    poseStatsSection.style.visibility = 'hidden';
+    poseStatsBtn.textContent = 'Show pose stats';
+  }
+})
+
+function displayPoseStats(pose) {
+  var pos = pose.position;
+  var orient = pose.orientation;
+  var linVel = pose.linearVelocity;
+  var linAcc = pose.linearAcceleration;
+  var angVel = pose.angularVelocity;
+  var angAcc = pose.angularAcceleration;
+
+  posStats.textContent = 'Position: x ' + pos[0].toFixed(3) + ', y ' + pos[1].toFixed(3) + ', z ' + pos[2].toFixed(3);
+  orientStats.textContent = 'Orientation: x ' + orient[0].toFixed(3) + ', y ' + orient[1].toFixed(3) + ', z ' + orient[2].toFixed(3);
+  linVelStats.textContent = 'Linear velocity: x ' + linVel[0].toFixed(3) + ', y ' + linVel[1].toFixed(3) + ', z ' + linVel[2].toFixed(3);
+  angVelStats.textContent = 'Angular velocity: x ' + angVel[0].toFixed(3) + ', y ' + angVel[1].toFixed(3) + ', z ' + angVel[2].toFixed(3);
+
+  if(linAcc) {
+    linAccStats.textContent = 'Linear acceleration: x ' + linAcc[0].toFixed(3) + ', y ' + linAcc[1].toFixed(3) + ', z ' + linAcc[2].toFixed(3);
+  } else {
+    linAccStats.textContent = 'Linear acceleration not reported';
+  }
+
+  if(angAcc) {
+    angAccStats.textContent = 'Angular acceleration: x ' + angAcc[0].toFixed(3) + ', y ' + angAcc[1].toFixed(3) + ', z ' + angAcc[2].toFixed(3);
+  } else {
+    angAccStats.textContent = 'Angular acceleration not reported';
+  }
+}
+
