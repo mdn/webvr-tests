@@ -40,8 +40,10 @@ var poseStatsDisplayed = false;
 //
 // start
 //
-// Called when the canvas is created to get the ball rolling.
-//
+// Called when the body has loaded is created to get the ball rolling.
+
+document.body.onload = start;
+
 function start() {
   canvas = document.getElementById("glcanvas");
 
