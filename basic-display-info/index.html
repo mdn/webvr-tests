@@ -47,7 +47,18 @@
       });
     }
 
-    // The following event handlers don't seem to work. Display still shows as connected even when unplugged?
+// supported in Firefox and Chrome
+
+window.addEventListener('vrdisplaypresentchange', function() {
+  if(vrDisplay.isPresenting) {
+    info.textContent = 'Display has started presenting.';
+  } else {
+    info.textContent = 'Display has stopped presenting.';
+  }
+  reportDisplays();
+});
+
+// Seem to work in Chrome, but not Firefox at the moment
 
 window.addEventListener('vrdisplayconnected', function() {
   info.textContent = 'Display connected.';
@@ -58,6 +69,8 @@ window.addEventListener('vrdisplaydisconnected', function() {
   info.textContent = 'Display disconnected.';
   reportDisplays();
 });
+
+// Listed in 1.1 spec, but currently don't seem to work anywhere
 
 window.addEventListener('vrdisplayactivate', function() {
   info.textContent = 'Display activated.';
@@ -76,15 +89,6 @@ window.addEventListener('vrdisplayblur', function() {
 
 window.addEventListener('vrdisplayfocus', function() {
   info.textContent = 'Display focused.';
-  reportDisplays();
-});
-
-window.addEventListener('vrdisplaypresentchange', function() {
-  if(vrDisplay.isPresenting) {
-    info.textContent = 'Display has started presenting.';
-  } else {
-    info.textContent = 'Display has stopped presenting.';
-  }
   reportDisplays();
 });
 
