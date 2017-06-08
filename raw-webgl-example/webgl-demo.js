@@ -118,7 +118,7 @@ function start() {
         }
       });
     } else {
-      info.textContent = 'WebVR API not supported by this browser.'
+      info.textContent = 'WebVR API not supported by this browser.';
     }
   }
 }
@@ -266,7 +266,7 @@ function initBuffers() {
     12, 13, 14,     12, 14, 15,   // bottom
     16, 17, 18,     16, 18, 19,   // right
     20, 21, 22,     20, 22, 23    // left
-  ]
+  ];
 
   // Now send the element array to GL
 
@@ -284,7 +284,7 @@ function initBuffers() {
 function initTextures() {
   cubeTexture = gl.createTexture();
   cubeImage = new Image();
-  cubeImage.onload = function() { handleTextureLoaded(cubeImage, cubeTexture); }
+  cubeImage.onload = function() { handleTextureLoaded(cubeImage, cubeTexture); };
   cubeImage.src = "metal003.png";
 }
 
@@ -631,19 +631,9 @@ function mvRotate(angle, v) {
 
 window.addEventListener('vrdisplaypresentchange', function(e) {
   console.log('Display ' + e.display.displayId + ' presentation has changed. Reason given: ' + e.reason + '.');
-})
+});
 
 // WebVR: Controls readout of pose stats panel
-
-// var poseStatsBtn = document.querySelector('.pose-stats');
-// var poseStatsSection = document.querySelector('section');
-// var posStats = document.querySelector('.pos');
-// var orientStats = document.querySelector('.orient');
-// var linVelStats = document.querySelector('.lin-vel');
-// var linAccStats = document.querySelector('.lin-acc');
-// var angVelStats = document.querySelector('.ang-vel');
-// var angAccStats = document.querySelector('.ang-acc');
-// var poseStatsDisplay = false;
 
 poseStatsBtn.addEventListener('click', function() {
   if(!poseStatsDisplayed) {
@@ -655,7 +645,7 @@ poseStatsBtn.addEventListener('click', function() {
     poseStatsSection.style.visibility = 'hidden';
     poseStatsBtn.textContent = 'Show pose stats';
   }
-})
+});
 
 function displayPoseStats(pose) {
   var pos = pose.position;
@@ -682,4 +672,3 @@ function displayPoseStats(pose) {
     angAccStats.textContent = 'Angular acceleration not reported';
   }
 }
-

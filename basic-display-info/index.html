@@ -49,40 +49,44 @@
 
     // The following event handlers don't seem to work. Display still shows as connected even when unplugged?
 
-    window.addEventListener('vrdisplayconnected', function() {
-      info.textContent = 'Display connected.'
-      reportDisplays();
-    });
+window.addEventListener('vrdisplayconnected', function() {
+  info.textContent = 'Display connected.';
+  reportDisplays();
+});
 
-    window.addEventListener('vrdisplaydisconnected', function() {
-      info.textContent = 'Display disconnected.'
-      reportDisplays();
-    });
+window.addEventListener('vrdisplaydisconnected', function() {
+  info.textContent = 'Display disconnected.';
+  reportDisplays();
+});
 
-    window.addEventListener('vrdisplayactivate', function() {
-      info.textContent = 'Display activated.'
-      reportDisplays();
-    });
+window.addEventListener('vrdisplayactivate', function() {
+  info.textContent = 'Display activated.';
+  reportDisplays();
+});
 
-    window.addEventListener('vrdisplaydeactivate', function() {
-      info.textContent = 'Display deactivated.'
-      reportDisplays();
-    });
+window.addEventListener('vrdisplaydeactivate', function() {
+  info.textContent = 'Display deactivated.';
+  reportDisplays();
+});
 
-    window.addEventListener('vrdisplayblur', function() {
-      info.textContent = 'Display unfocused.'
-      reportDisplays();
-    });
+window.addEventListener('vrdisplayblur', function() {
+  info.textContent = 'Display unfocused.';
+  reportDisplays();
+});
 
-    window.addEventListener('vrdisplayfocus', function() {
-      info.textContent = 'Display focused.'
-      reportDisplays();
-    });
+window.addEventListener('vrdisplayfocus', function() {
+  info.textContent = 'Display focused.';
+  reportDisplays();
+});
 
-    window.addEventListener('vrdisplaypresentchange', function() {
-      info.textContent = 'Display presentation status changed.'
-      reportDisplays();
-    });
+window.addEventListener('vrdisplaypresentchange', function() {
+  if(vrDisplay.isPresenting) {
+    info.textContent = 'Display has started presenting.';
+  } else {
+    info.textContent = 'Display has stopped presenting.';
+  }
+  reportDisplays();
+});
 
 
   </script>
