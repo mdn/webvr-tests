@@ -5,12 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width">
 
-    <title>VRDisplay basic test</title>
+    <title>VR Gamepads basic test</title>
 
   </head>
 
   <body>
-    <h1>VRDisplay basic test</h1>
+    <h1>VR Gamepads basic test</h1>
 
     <p></p>
 
@@ -22,7 +22,8 @@
   <script>
     var list = document.querySelector('ul');
     var info = document.querySelector('p');
-    if(navigator.getVRDisplays) {
+
+    if(navigator.getVRDisplays && navigator.getGamepads) {
         reportDisplays();
     } else {
       info.textContent = 'WebVR API not supported by this browser.'
@@ -30,6 +31,7 @@
 
     function reportDisplays() {
       navigator.getVRDisplays().then(function(displays) {
+      	console.log(displays.length + ' displays');
         for(var i = 0; i < displays.length; i++) {
           var cap = displays[i].capabilities;
           // cap is a VRDisplayCapabilities object
@@ -47,12 +49,25 @@
       });
     }
 
-// Clear the list when needed
+    function reportGamepad(gp) {
+      var listItem = document.createElement('li');
+      listItem.classList = 'gamepad' + gp.id;
+      listItem.innerHTML = '<strong>Gamepad: ' + gp.id + '</strong>'
+                   + '<br>associated with VR Display ID: ' + gp.displayId
+                   + '<br>Gamepad associated with which hand: ' + gp.hand
+                   + '<br>Available haptic actuators: ' + gp.hapticActuators.length
+                   + '<br>Gamepad can return position info: ' + gp.pose.hasPosition
+                   + '<br>Gamepad can return orientation info: ' + gp.pose.hasOrientation;
+      list.appendChild(listItem);
+    }
 
-function clearList() {
-  while (list.firstChild) {
-    list.removeChild(list.firstChild);
-  }
+// Remove gamepads when needed
+
+function removeGamepads() {
+	var gpLi = document.querySelectorAll('.gamepad');
+	for(var i = 0; i < gpLi.length; i++) {
+    list.removeChild(gpLi[i]);
+	}
 }
 
 // Events
@@ -65,8 +80,6 @@ window.addEventListener('vrdisplaypresentchange', function() {
   } else {
     info.textContent = 'Display has stopped presenting.';
   }
-  clearList();
-  reportDisplays();
 });
 
 // Seem to work in Chrome, but not Firefox at the moment
@@ -74,39 +87,23 @@ window.addEventListener('vrdisplaypresentchange', function() {
 window.addEventListener('vrdisplayconnected', function() {
   info.textContent = 'Display connected.';
   clearList();
-  reportDisplays();
 });
 
 window.addEventListener('vrdisplaydisconnected', function() {
   info.textContent = 'Display disconnected.';
   clearList();
-  reportDisplays();
 });
 
-// Listed in 1.1 spec, but currently don't seem to work anywhere
+// Gamepad API events, supported in Firefox and Chrome
 
-window.addEventListener('vrdisplayactivate', function() {
-  info.textContent = 'Display activated.';
-  clearList();
-  reportDisplays();
+window.addEventListener('gamepadconnected', function(e) {
+  info.textContent = 'Gamepad ' + e.gamepad.id + ' connected.';
+  reportGamepad(e.gamepad);
 });
 
-window.addEventListener('vrdisplaydeactivate', function() {
-  info.textContent = 'Display deactivated.';
-  clearList();
-  reportDisplays();
-});
-
-window.addEventListener('vrdisplayblur', function() {
-  info.textContent = 'Display unfocused.';
-  clearList();
-  reportDisplays();
-});
-
-window.addEventListener('vrdisplayfocus', function() {
-  info.textContent = 'Display focused.';
-  clearList();
-  reportDisplays();
+window.addEventListener('gamepaddisconnected', function(e) {
+  info.textContent = 'Gamepad ' + e.gamepad.id + ' disconnected.';
+  list.removeChild('gamepad' + e.gamepad.id);
 });
 
 
