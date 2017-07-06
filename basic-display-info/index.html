@@ -71,13 +71,13 @@ window.addEventListener('vrdisplaypresentchange', function() {
 
 // Seem to work in Chrome, but not Firefox at the moment
 
-window.addEventListener('vrdisplayconnected', function() {
+window.addEventListener('vrdisplayconnect', function() {
   info.textContent = 'Display connected.';
   clearList();
   reportDisplays();
 });
 
-window.addEventListener('vrdisplaydisconnected', function() {
+window.addEventListener('vrdisplaydisconnect', function() {
   info.textContent = 'Display disconnected.';
   clearList();
   reportDisplays();

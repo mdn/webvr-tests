@@ -120,7 +120,7 @@ function start() {
         }
       });
     } else {
-      info.textContent = 'WebVR API not supported by this browser.';
+      console.log('WebVR API not supported by this browser.');
     }
   }
 }
