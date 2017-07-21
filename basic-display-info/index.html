@@ -69,8 +69,6 @@ window.addEventListener('vrdisplaypresentchange', function() {
   reportDisplays();
 });
 
-// Seem to work in Chrome, but not Firefox at the moment
-
 window.addEventListener('vrdisplayconnect', function() {
   info.textContent = 'Display connected.';
   clearList();
@@ -83,8 +81,6 @@ window.addEventListener('vrdisplaydisconnect', function() {
   reportDisplays();
 });
 
-// Listed in 1.1 spec, but currently don't seem to work anywhere
-
 window.addEventListener('vrdisplayactivate', function() {
   info.textContent = 'Display activated.';
   clearList();
@@ -96,6 +92,8 @@ window.addEventListener('vrdisplaydeactivate', function() {
   clearList();
   reportDisplays();
 });
+
+// Listed in 1.1 spec, but currently don't seem to work anywhere
 
 window.addEventListener('vrdisplayblur', function() {
   info.textContent = 'Display unfocused.';
