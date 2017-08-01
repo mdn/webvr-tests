@@ -22,11 +22,13 @@
   <script>
     var list = document.querySelector('ul');
     var info = document.querySelector('p');
+    var initialRun = true;
 
     if(navigator.getVRDisplays && navigator.getGamepads) {
-        reportDisplays();
+      info.textContent = 'WebVR API and Gamepad API supported.'
+      reportDisplays();
     } else {
-      info.textContent = 'WebVR API not supported by this browser.'
+      info.textContent = 'WebVR API and/or Gamepad API not supported by this browser.'
     }
 
     function reportDisplays() {
@@ -46,65 +48,56 @@
                        + '<br>Display max layers: ' + cap.maxLayers;
           list.appendChild(listItem);
         }
+        
+        setTimeout(reportGamepads, 1000);
+        // For VR, controllers will only be active after their corresponding headset is active
       });
     }
 
-    function reportGamepad(gp) {
-      var listItem = document.createElement('li');
-      listItem.classList = 'gamepad' + gp.id;
-      listItem.innerHTML = '<strong>Gamepad: ' + gp.id + '</strong>'
-                   + '<br>associated with VR Display ID: ' + gp.displayId
-                   + '<br>Gamepad associated with which hand: ' + gp.hand
-                   + '<br>Available haptic actuators: ' + gp.hapticActuators.length
-                   + '<br>Gamepad can return position info: ' + gp.pose.hasPosition
-                   + '<br>Gamepad can return orientation info: ' + gp.pose.hasOrientation;
-      list.appendChild(listItem);
+    function reportGamepads() {
+    	var gamepads = navigator.getGamepads();
+    	console.log(gamepads.length + ' controllers');
+    	for(var i = 0; i < gamepads.length; ++i) {
+    		var gp = gamepads[i];
+	      var listItem = document.createElement('li');
+	      listItem.classList = 'gamepad';
+	      listItem.innerHTML = '<strong>Gamepad ' + gp.index + '</strong> (' + gp.id + ')'
+	                   + '<br>Associated with VR Display ID: ' + gp.displayId
+	                   + '<br>Gamepad associated with which hand: ' + gp.hand
+	                   + '<br>Available haptic actuators: ' + gp.hapticActuators.length
+	                   + '<br>Gamepad can return position info: ' + gp.pose.hasPosition
+	                   + '<br>Gamepad can return orientation info: ' + gp.pose.hasOrientation;
+	      list.appendChild(listItem);
+      }
+      initialRun = false;
     }
 
-// Remove gamepads when needed
+		// Remove gamepads when needed
 
-function removeGamepads() {
-	var gpLi = document.querySelectorAll('.gamepad');
-	for(var i = 0; i < gpLi.length; i++) {
-    list.removeChild(gpLi[i]);
-	}
-}
+		function removeGamepads() {
+			var gpLi = document.querySelectorAll('.gamepad');
+			for(var i = 0; i < gpLi.length; i++) {
+		    list.removeChild(gpLi[i]);
+			}
 
-// Events
+			reportGamepads();
+		}
 
-// supported in Firefox and Chrome
+		// Events
 
-window.addEventListener('vrdisplaypresentchange', function() {
-  if(vrDisplay.isPresenting) {
-    info.textContent = 'Display has started presenting.';
-  } else {
-    info.textContent = 'Display has stopped presenting.';
-  }
-});
+		// Gamepad API events, supported in Firefox and Chrome
 
-// Seem to work in Chrome, but not Firefox at the moment
+		window.addEventListener('gamepadconnected', function(e) {
+		  info.textContent = 'Gamepad ' + e.gamepad.index + ' connected.';
+		  if(!initialRun) {
+		  	setTimeout(removeGamepads, 1000);
+		  }
+		});
 
-window.addEventListener('vrdisplayconnected', function() {
-  info.textContent = 'Display connected.';
-  clearList();
-});
-
-window.addEventListener('vrdisplaydisconnected', function() {
-  info.textContent = 'Display disconnected.';
-  clearList();
-});
-
-// Gamepad API events, supported in Firefox and Chrome
-
-window.addEventListener('gamepadconnected', function(e) {
-  info.textContent = 'Gamepad ' + e.gamepad.id + ' connected.';
-  reportGamepad(e.gamepad);
-});
-
-window.addEventListener('gamepaddisconnected', function(e) {
-  info.textContent = 'Gamepad ' + e.gamepad.id + ' disconnected.';
-  list.removeChild('gamepad' + e.gamepad.id);
-});
+		window.addEventListener('gamepaddisconnected', function(e) {
+		  info.textContent = 'Gamepad ' + e.gamepad.index + ' disconnected.';
+		  setTimeout(removeGamepads, 1000);
+		});
 
 
   </script>
