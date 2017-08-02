@@ -17,88 +17,87 @@
     <ul>
     </ul>
 
+    <script>
+      var list = document.querySelector('ul');
+      var info = document.querySelector('p');
+      var initialRun = true;
 
-  </body>
-  <script>
-    var list = document.querySelector('ul');
-    var info = document.querySelector('p');
-    var initialRun = true;
+      if(navigator.getVRDisplays && navigator.getGamepads) {
+        info.textContent = 'WebVR API and Gamepad API supported.'
+        reportDisplays();
+      } else {
+        info.textContent = 'WebVR API and/or Gamepad API not supported by this browser.'
+      }
 
-    if(navigator.getVRDisplays && navigator.getGamepads) {
-      info.textContent = 'WebVR API and Gamepad API supported.'
-      reportDisplays();
-    } else {
-      info.textContent = 'WebVR API and/or Gamepad API not supported by this browser.'
-    }
+      function reportDisplays() {
+        navigator.getVRDisplays().then(function(displays) {
+        	console.log(displays.length + ' displays');
+          for(var i = 0; i < displays.length; i++) {
+            var cap = displays[i].capabilities;
+            // cap is a VRDisplayCapabilities object
+            var listItem = document.createElement('li');
+            listItem.innerHTML = '<strong>Display ' + (i+1) + '</strong>'
+                         + '<br>VR Display ID: ' + displays[i].displayId
+                         + '<br>VR Display Name: ' + displays[i].displayName
+                         + '<br>Display can present content: ' + cap.canPresent
+                         + '<br>Display is separate from the computer\'s main display: ' + cap.hasExternalDisplay
+                         + '<br>Display can return position info: ' + cap.hasPosition
+                         + '<br>Display can return orientation info: ' + cap.hasOrientation
+                         + '<br>Display max layers: ' + cap.maxLayers;
+            list.appendChild(listItem);
+          }
 
-    function reportDisplays() {
-      navigator.getVRDisplays().then(function(displays) {
-      	console.log(displays.length + ' displays');
-        for(var i = 0; i < displays.length; i++) {
-          var cap = displays[i].capabilities;
-          // cap is a VRDisplayCapabilities object
+          setTimeout(reportGamepads, 1000);
+          // For VR, controllers will only be active after their corresponding headset is active
+        });
+      }
+
+      function reportGamepads() {
+      	var gamepads = navigator.getGamepads();
+      	console.log(gamepads.length + ' controllers');
+      	for(var i = 0; i < gamepads.length; ++i) {
+      		var gp = gamepads[i];
           var listItem = document.createElement('li');
-          listItem.innerHTML = '<strong>Display ' + (i+1) + '</strong>'
-                       + '<br>VR Display ID: ' + displays[i].displayId
-                       + '<br>VR Display Name: ' + displays[i].displayName
-                       + '<br>Display can present content: ' + cap.canPresent
-                       + '<br>Display is separate from the computer\'s main display: ' + cap.hasExternalDisplay
-                       + '<br>Display can return position info: ' + cap.hasPosition
-                       + '<br>Display can return orientation info: ' + cap.hasOrientation
-                       + '<br>Display max layers: ' + cap.maxLayers;
+          listItem.classList = 'gamepad';
+          listItem.innerHTML = '<strong>Gamepad ' + gp.index + '</strong> (' + gp.id + ')'
+                       + '<br>Associated with VR Display ID: ' + gp.displayId
+                       + '<br>Gamepad associated with which hand: ' + gp.hand
+                       + '<br>Available haptic actuators: ' + gp.hapticActuators.length
+                       + '<br>Gamepad can return position info: ' + gp.pose.hasPosition
+                       + '<br>Gamepad can return orientation info: ' + gp.pose.hasOrientation;
           list.appendChild(listItem);
         }
-        
-        setTimeout(reportGamepads, 1000);
-        // For VR, controllers will only be active after their corresponding headset is active
-      });
-    }
-
-    function reportGamepads() {
-    	var gamepads = navigator.getGamepads();
-    	console.log(gamepads.length + ' controllers');
-    	for(var i = 0; i < gamepads.length; ++i) {
-    		var gp = gamepads[i];
-	      var listItem = document.createElement('li');
-	      listItem.classList = 'gamepad';
-	      listItem.innerHTML = '<strong>Gamepad ' + gp.index + '</strong> (' + gp.id + ')'
-	                   + '<br>Associated with VR Display ID: ' + gp.displayId
-	                   + '<br>Gamepad associated with which hand: ' + gp.hand
-	                   + '<br>Available haptic actuators: ' + gp.hapticActuators.length
-	                   + '<br>Gamepad can return position info: ' + gp.pose.hasPosition
-	                   + '<br>Gamepad can return orientation info: ' + gp.pose.hasOrientation;
-	      list.appendChild(listItem);
+        initialRun = false;
       }
-      initialRun = false;
-    }
 
-		// Remove gamepads when needed
+  		// Remove gamepads when needed
 
-		function removeGamepads() {
-			var gpLi = document.querySelectorAll('.gamepad');
-			for(var i = 0; i < gpLi.length; i++) {
-		    list.removeChild(gpLi[i]);
-			}
+      function removeGamepads() {
+      	var gpLi = document.querySelectorAll('.gamepad');
+      	for(var i = 0; i < gpLi.length; i++) {
+          list.removeChild(gpLi[i]);
+      	}
 
-			reportGamepads();
-		}
+      	reportGamepads();
+      }
 
-		// Events
+  		// Events
 
-		// Gamepad API events, supported in Firefox and Chrome
+  		// Gamepad API events, supported in Firefox and Chrome
 
-		window.addEventListener('gamepadconnected', function(e) {
-		  info.textContent = 'Gamepad ' + e.gamepad.index + ' connected.';
-		  if(!initialRun) {
-		  	setTimeout(removeGamepads, 1000);
-		  }
-		});
+      window.addEventListener('gamepadconnected', function(e) {
+        info.textContent = 'Gamepad ' + e.gamepad.index + ' connected.';
+        if(!initialRun) {
+        	setTimeout(removeGamepads, 1000);
+        }
+      });
 
-		window.addEventListener('gamepaddisconnected', function(e) {
-		  info.textContent = 'Gamepad ' + e.gamepad.index + ' disconnected.';
-		  setTimeout(removeGamepads, 1000);
-		});
+      window.addEventListener('gamepaddisconnected', function(e) {
+        info.textContent = 'Gamepad ' + e.gamepad.index + ' disconnected.';
+        setTimeout(removeGamepads, 1000);
+      });
 
 
-  </script>
+    </script>
+  </body>
 </html>
