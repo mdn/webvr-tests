@@ -439,7 +439,7 @@ function drawVRScene() {
     // Now move the drawing position a bit to where we want to start
     // drawing the cube.
 
-    if(gp && gpPose.hasOrientation) {
+    if(gp && gpPose.hasPosition) {
       mvTranslate([
                     0.0 + (curPos[0] * 15) - (curOrient[1] * 15),
                     0.0 + (curPos[1] * 15) + (curOrient[0] * 15),
@@ -447,9 +447,9 @@ function drawVRScene() {
                  ]);
     } else if(gp) {
       mvTranslate([
-                    0.0 + (curPos[0] * 15),
-                    0.0 + (curPos[1] * 15),
-                    -15.0 + (curPos[2] * 25)
+                    0.0 + (curOrient[1] * 15),
+                    0.0 + (curOrient[0] * 15),
+                    -15.0
                  ]);
     } else {
       mvTranslate([
@@ -676,7 +676,7 @@ function displayPoseStats(pose) {
   var linAcc = pose.linearAcceleration;
   var angVel = pose.angularVelocity;
   var angAcc = pose.angularAcceleration;
-  
+
   if(pose.hasPosition) {
     posStats.textContent = 'Position: x ' + pos[0].toFixed(3) + ', y ' + pos[1].toFixed(3) + ', z ' + pos[2].toFixed(3);
   } else {
